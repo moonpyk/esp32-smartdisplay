@@ -36,12 +36,14 @@ extern "C"
     // Touch calibration
     extern touch_calibration_data_t touch_calibration_data;
     touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3]);
-#endif    
+#endif
+#ifdef DISPLAY_BCKL
     // Set the brightness of the backlight display
     void smartdisplay_lcd_set_backlight(float duty); // [0, 1]
     // Set the adaptive brightness callback
     typedef float (*smartdisplay_lcd_adaptive_brightness_cb_t)();
     void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint32_t interval);
+#endif
 #ifdef BOARD_HAS_CDS
     // Read CdS sensor and return a value for the screen brightness (to be used in smartdisplay_lcd_set_brightness_cb)
     float smartdisplay_lcd_adaptive_brightness_cds();

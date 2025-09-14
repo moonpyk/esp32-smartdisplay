@@ -46,6 +46,7 @@ void lvgl_log(lv_log_level_t level, const char *buf)
 }
 #endif
 
+#ifdef DISPLAY_BCKL
 // Set backlight intensity
 void smartdisplay_lcd_set_backlight(float duty)
 {
@@ -105,6 +106,7 @@ void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_
   else
     smartdisplay_lcd_set_backlight(0.5f);
 }
+#endif
 
 #ifdef BOARD_HAS_RGB_LED
 void smartdisplay_led_set_rgb(bool r, bool g, bool b)
@@ -184,6 +186,7 @@ void smartdisplay_init()
 #endif
 
   lv_init();
+#ifdef DISPLAY_BCKL
 #ifdef BCKL_DELAY_MS
   vTaskDelay(pdMS_TO_TICKS(BCKL_DELAY_MS));
 #endif
@@ -196,6 +199,7 @@ void smartdisplay_init()
   ledcSetup(PWM_CHANNEL_BCKL, PWM_FREQ_BCKL, PWM_BITS_BCKL);
   ledcAttachPin(DISPLAY_BCKL, PWM_CHANNEL_BCKL);
 #endif
+#endif
   // Setup TFT display
   display = lvgl_lcd_init();
 
@@ -206,8 +210,10 @@ void smartdisplay_init()
 
   //  Clear screen
   lv_obj_clean(lv_scr_act());
+#if DISPLAY_BCKL  
   // Turn backlight on (50%)
   smartdisplay_lcd_set_backlight(0.5f);
+#endif
 
 // If there is a touch controller defined
 #ifdef BOARD_HAS_TOUCH
