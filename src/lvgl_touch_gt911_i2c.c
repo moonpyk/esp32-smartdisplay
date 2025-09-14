@@ -80,7 +80,6 @@ lv_indev_t* lvgl_touch_init()
     indev->type = LV_INDEV_TYPE_POINTER;
     indev->user_data = touch_handle;
     indev->read_cb = gt911_lvgl_touch_cb;
-
     return indev;
 }
 
