@@ -15,7 +15,7 @@ const uint8_t XPT2046_START_Z1_POWER_DOWN = 0xB0;  // S=1, ADDR=011, MODE=0 (12b
 // 12 bits ADC limit
 const uint16_t XPT2046_ADC_LIMIT = (1 << 12); // 4096
 
-esp_err_t xpt2046_read_register(esp_lcd_touch_handle_t th, uint8_t reg, uint16_t *value)
+static esp_err_t xpt2046_read_register(esp_lcd_touch_handle_t th, uint8_t reg, uint16_t *value)
 {
     uint8_t buf[2];
     esp_err_t res = esp_lcd_panel_io_rx_param(th->io, reg, buf, sizeof(buf));
@@ -27,7 +27,7 @@ esp_err_t xpt2046_read_register(esp_lcd_touch_handle_t th, uint8_t reg, uint16_t
     return ESP_OK;
 }
 
-esp_err_t xpt2046_enter_sleep(esp_lcd_touch_handle_t th)
+static esp_err_t xpt2046_enter_sleep(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -44,7 +44,7 @@ esp_err_t xpt2046_enter_sleep(esp_lcd_touch_handle_t th)
     return ESP_OK;
 }
 
-esp_err_t xpt2046_exit_sleep(esp_lcd_touch_handle_t th)
+static esp_err_t xpt2046_exit_sleep(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -61,7 +61,7 @@ esp_err_t xpt2046_exit_sleep(esp_lcd_touch_handle_t th)
     return ESP_OK;
 }
 
-esp_err_t xpt2046_read_data(esp_lcd_touch_handle_t th)
+static esp_err_t xpt2046_read_data(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -124,7 +124,7 @@ esp_err_t xpt2046_read_data(esp_lcd_touch_handle_t th)
     return ESP_OK;
 }
 
-bool xpt2046_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
+static bool xpt2046_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
 {
     log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
     if (th == NULL || x == NULL || y == NULL || point_num == NULL)
@@ -148,7 +148,7 @@ bool xpt2046_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_
     return *point_num > 0;
 }
 
-esp_err_t xpt2046_del(esp_lcd_touch_handle_t th)
+static esp_err_t xpt2046_del(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)

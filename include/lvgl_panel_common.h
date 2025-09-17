@@ -6,7 +6,7 @@
 #include <esp_lcd_panel_rgb.h>
 #endif
 
-static inline lv_display_t* lvgl_create_display()
+static inline lv_display_t *lvgl_create_display()
 {
     lv_display_t *display = lv_display_create(DISPLAY_WIDTH, DISPLAY_HEIGHT);
     lv_color_format_t cf = lv_display_get_color_format(display);
@@ -39,10 +39,13 @@ static inline void lv_flush_hardware(lv_display_t *display, const lv_area_t *are
     esp_lcd_panel_handle_t panel_handle = display->user_data;
     uint16_t *p = (uint16_t *)px_map;
     uint32_t pixels = lv_area_get_size(area);
-    while (pixels--)
+    if (display->color_format == LV_COLOR_FORMAT_RGB565)
     {
-        *p = __builtin_bswap16(*p);
-        p++;
+        while (pixels--)
+        {
+            *p = __builtin_bswap16(*p);
+            p++;
+        }
     }
 
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, px_map));
@@ -52,7 +55,6 @@ static inline void lv_flush_hardware(lv_display_t *display, const lv_area_t *are
 static inline void lv_flush_software(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
     const esp_lcd_panel_handle_t panel_handle = display->user_data;
-
     lv_display_rotation_t rotation = lv_display_get_rotation(display);
     if (rotation == LV_DISPLAY_ROTATION_0)
     {

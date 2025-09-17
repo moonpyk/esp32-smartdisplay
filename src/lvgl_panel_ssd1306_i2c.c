@@ -30,9 +30,10 @@ lv_display_t *lvgl_lcd_init()
     // Create IO handle
     const esp_lcd_panel_io_i2c_config_t io_i2c_config = {
         .dev_addr = SSD1306_IO_I2C_CONFIG_DEV_ADDRESS,
+        .on_color_trans_done = lvgl_panel_color_trans_done,
         .control_phase_bytes = SSD1306_IO_I2C_CONFIG_CONTROL_PHASE_BYTES,
         .user_ctx = display,
-        .dc_bit_offset = SSD1306_IO_I2C_CONFIG_DC_BIT_OFFSET,
+        .dc_bit_offset = SSD1306_IO_I2C_CONFIG_DC_BIT_OFFSET,   // 6 for SSD1306, 0 for SH1107 
         .lcd_cmd_bits = SSD1306_IO_I2C_CONFIG_LCD_CMD_BITS,
         .lcd_param_bits = SSD1306_IO_I2C_CONFIG_LCD_PARAM_BITS,
         .flags = {

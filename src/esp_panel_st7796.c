@@ -21,7 +21,7 @@ typedef struct
     uint8_t madctl;
 } st7796_panel_t;
 
-const lcd_init_cmd_t st7796_vendor_specific_init_default[] = {
+static const lcd_init_cmd_t st7796_vendor_specific_init_default[] = {
     {0xf0, (const uint8_t[]){0xc3}, 1, 0},
     {0xf0, (const uint8_t[]){0x96}, 1, 0},
     {0xb4, (const uint8_t[]){0x01}, 1, 0},
@@ -36,7 +36,7 @@ const lcd_init_cmd_t st7796_vendor_specific_init_default[] = {
     {0xf0, (const uint8_t[]){0x69}, 1, 0},
 };
 
-esp_err_t st7796_reset(esp_lcd_panel_t *panel)
+static esp_err_t st7796_reset(esp_lcd_panel_t *panel)
 {
     log_v("panel:0x%08x", panel);
     if (panel == NULL)
@@ -67,7 +67,7 @@ esp_err_t st7796_reset(esp_lcd_panel_t *panel)
     return ESP_OK;
 }
 
-esp_err_t st7796_init(esp_lcd_panel_t *panel)
+static esp_err_t st7796_init(esp_lcd_panel_t *panel)
 {
     log_v("panel:0x%08x", panel);
     if (panel == NULL)
@@ -131,7 +131,7 @@ esp_err_t st7796_init(esp_lcd_panel_t *panel)
     return ESP_OK;
 }
 
-esp_err_t st7796_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, int x_end, int y_end, const void *color_data)
+static esp_err_t st7796_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, int x_end, int y_end, const void *color_data)
 {
     log_v("panel:0x%08x, x_start:%d, y_start:%d, x_end:%d, y_end:%d, color_data:0x%08x", panel, x_start, y_start, x_end, y_end, color_data);
     if (panel == NULL || color_data == NULL)
@@ -178,7 +178,7 @@ esp_err_t st7796_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, i
     return ESP_OK;
 }
 
-esp_err_t st7796_invert_color(esp_lcd_panel_t *panel, bool invert)
+static esp_err_t st7796_invert_color(esp_lcd_panel_t *panel, bool invert)
 {
     log_v("panel:0x%08x, invert:%d", panel, invert);
     if (panel == NULL)
@@ -196,7 +196,7 @@ esp_err_t st7796_invert_color(esp_lcd_panel_t *panel, bool invert)
     return ESP_OK;
 }
 
-esp_err_t st7796_update_madctl(st7796_panel_t *ph)
+static esp_err_t st7796_update_madctl(st7796_panel_t *ph)
 {
     esp_err_t res;
     if ((res = esp_lcd_panel_io_tx_param(ph->io, LCD_CMD_MADCTL, &ph->madctl, 1)) != ESP_OK)
@@ -208,7 +208,7 @@ esp_err_t st7796_update_madctl(st7796_panel_t *ph)
     return ESP_OK;
 }
 
-esp_err_t st7796_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
+static esp_err_t st7796_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
 {
     log_v("panel:0x%08x, mirror_x:%d, mirror_y:%d", panel, mirror_x, mirror_y);
     if (panel == NULL)
@@ -229,7 +229,7 @@ esp_err_t st7796_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
     return st7796_update_madctl(ph);
 }
 
-esp_err_t st7796_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
+static esp_err_t st7796_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
 {
     log_v("panel:0x%08x, swap_xy:%d", panel, swap_xy);
     if (panel == NULL)
@@ -245,7 +245,7 @@ esp_err_t st7796_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
     return st7796_update_madctl(ph);
 }
 
-esp_err_t st7796_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
+static esp_err_t st7796_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
 {
     log_v("panel:0x%08x, x_gap:%d, y_gap:%d", panel, x_gap, y_gap);
     if (panel == NULL)
@@ -259,7 +259,7 @@ esp_err_t st7796_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
     return ESP_OK;
 }
 
-esp_err_t st7796_disp_off(esp_lcd_panel_t *panel, bool off)
+static esp_err_t st7796_disp_off(esp_lcd_panel_t *panel, bool off)
 {
     log_v("panel:0x%08x, off:%d", panel, off);
     if (panel == NULL)
@@ -277,7 +277,7 @@ esp_err_t st7796_disp_off(esp_lcd_panel_t *panel, bool off)
     return ESP_OK;
 }
 
-esp_err_t st7796_del(esp_lcd_panel_t *panel)
+static esp_err_t st7796_del(esp_lcd_panel_t *panel)
 {
     log_v("panel:0x%08x", panel);
     if (panel == NULL)

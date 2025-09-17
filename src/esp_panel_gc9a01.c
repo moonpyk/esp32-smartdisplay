@@ -21,7 +21,7 @@ typedef struct
     uint8_t madctl;
 } gc9a01_panel_t;
 
-const lcd_init_cmd_t gc9a01_vendor_specific_init_default[] = {
+static const lcd_init_cmd_t gc9a01_vendor_specific_init_default[] = {
     // Enable Inter Register
     {0xfe, (const uint8_t[]){0x00}, 0, 0},
     {0xef, (const uint8_t[]){0x00}, 0, 0},

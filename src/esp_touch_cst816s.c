@@ -80,7 +80,7 @@ typedef struct __attribute__((packed))
     cst816s_point point; // POSH (4 bits) + POSL (8 bits)
 } cst816s_touch_event;
 
-esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
+static esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -116,7 +116,7 @@ esp_err_t cst816s_reset(esp_lcd_touch_handle_t th)
     return ESP_OK;
 }
 
-esp_err_t cst816s_read_info(esp_lcd_touch_handle_t th)
+static esp_err_t cst816s_read_info(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -137,7 +137,7 @@ esp_err_t cst816s_read_info(esp_lcd_touch_handle_t th)
     return ESP_OK;
 }
 
-esp_err_t cst816s_enter_sleep(esp_lcd_touch_handle_t th)
+static esp_err_t cst816s_enter_sleep(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -151,7 +151,7 @@ esp_err_t cst816s_enter_sleep(esp_lcd_touch_handle_t th)
     return res;
 }
 
-esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
+static esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -180,7 +180,7 @@ esp_err_t cst816s_read_data(esp_lcd_touch_handle_t th)
     return ESP_OK;
 }
 
-bool cst816s_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
+static bool cst816s_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
 {
     log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
     if (th == NULL || x == NULL || y == NULL || point_num == NULL)
@@ -202,7 +202,7 @@ bool cst816s_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_
     return *point_num > 0;
 }
 
-esp_err_t cst816s_del(esp_lcd_touch_handle_t th)
+static esp_err_t cst816s_del(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)

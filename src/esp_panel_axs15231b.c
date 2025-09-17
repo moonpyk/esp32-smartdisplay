@@ -21,7 +21,7 @@ typedef struct
     uint8_t madctl;
 } axs15231b_panel_t;
 
-const lcd_init_cmd_t axs15231b_vendor_specific_init_default[] = {
+static const lcd_init_cmd_t axs15231b_vendor_specific_init_default[] = {
     {0xBB, (uint8_t[]){0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x5A, 0xA5}, 8, 0},
     {0xA0, (uint8_t[]){0x00, 0x10, 0x00, 0x02, 0x00, 0x00, 0x64, 0x3F, 0x20, 0x05, 0x3F, 0x3F, 0x00, 0x00, 0x00, 0x00, 0x00}, 17, 0},
     {0xA2, (uint8_t[]){0x30, 0x04, 0x0A, 0x3C, 0xEC, 0x54, 0xC4, 0x30, 0xAC, 0x28, 0x7F, 0x7F, 0x7F, 0x20, 0xF8, 0x10, 0x02, 0xFF, 0xFF, 0xF0, 0x90, 0x01, 0x32, 0xA0, 0x91, 0xC0, 0x20, 0x7F, 0xFF, 0x00, 0x54}, 31, 0},
@@ -56,7 +56,7 @@ const lcd_init_cmd_t axs15231b_vendor_specific_init_default[] = {
     // All Pixels off
     {0x22, (uint8_t[]){0x00}, 0, 200}};
 
-esp_err_t axs15231b_reset(esp_lcd_panel_t *panel)
+static esp_err_t axs15231b_reset(esp_lcd_panel_t *panel)
 {
     log_v("panel:0x%08x", panel);
     if (panel == NULL)
@@ -117,7 +117,7 @@ esp_err_t axs15231b_reset(esp_lcd_panel_t *panel)
     return ESP_OK;
 }
 
-esp_err_t axs15231b_init(esp_lcd_panel_t *panel)
+static esp_err_t axs15231b_init(esp_lcd_panel_t *panel)
 {
     log_v("panel:0x%08x", panel);
     if (panel == NULL)
@@ -178,7 +178,7 @@ esp_err_t axs15231b_init(esp_lcd_panel_t *panel)
     return ESP_OK;
 }
 
-esp_err_t axs15231b_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, int x_end, int y_end, const void *color_data)
+static esp_err_t axs15231b_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, int x_end, int y_end, const void *color_data)
 {
     log_v("panel:0x%08x, x_start:%d, y_start:%d, x_end:%d, y_end:%d, color_data:0x%08x", panel, x_start, y_start, x_end, y_end, color_data);
     if (panel == NULL || color_data == NULL)
@@ -225,7 +225,7 @@ esp_err_t axs15231b_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start
     return ESP_OK;
 }
 
-esp_err_t axs15231b_invert_color(esp_lcd_panel_t *panel, bool invert)
+static esp_err_t axs15231b_invert_color(esp_lcd_panel_t *panel, bool invert)
 {
     log_v("panel:0x%08x, invert:%d", panel, invert);
     if (panel == NULL)
@@ -243,7 +243,7 @@ esp_err_t axs15231b_invert_color(esp_lcd_panel_t *panel, bool invert)
     return ESP_OK;
 }
 
-esp_err_t axs15231b_update_madctl(axs15231b_panel_t *ph)
+static esp_err_t axs15231b_update_madctl(axs15231b_panel_t *ph)
 {
     esp_err_t res;
     if ((res = esp_lcd_panel_io_tx_param(ph->panel_io_handle, LCD_CMD_MADCTL, &ph->madctl, 1)) != ESP_OK)
@@ -255,7 +255,7 @@ esp_err_t axs15231b_update_madctl(axs15231b_panel_t *ph)
     return ESP_OK;
 }
 
-esp_err_t axs15231b_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
+static esp_err_t axs15231b_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
 {
     log_v("panel:0x%08x, mirror_x:%d, mirror_y:%d", panel, mirror_x, mirror_y);
     if (panel == NULL)
@@ -276,7 +276,7 @@ esp_err_t axs15231b_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
     return axs15231b_update_madctl(ph);
 }
 
-esp_err_t axs15231b_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
+static esp_err_t axs15231b_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
 {
     log_v("panel:0x%08x, swap_xy:%d", panel, swap_xy);
     if (panel == NULL)
@@ -292,7 +292,7 @@ esp_err_t axs15231b_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
     return axs15231b_update_madctl(ph);
 }
 
-esp_err_t axs15231b_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
+static esp_err_t axs15231b_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
 {
     log_v("panel:0x%08x, x_gap:%d, y_gap:%d", panel, x_gap, y_gap);
     if (panel == NULL)
@@ -306,7 +306,7 @@ esp_err_t axs15231b_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
     return ESP_OK;
 }
 
-esp_err_t axs15231b_disp_off(esp_lcd_panel_t *panel, bool off)
+static esp_err_t axs15231b_disp_off(esp_lcd_panel_t *panel, bool off)
 {
     log_v("panel:0x%08x, off:%d", panel, off);
     if (panel == NULL)
@@ -324,7 +324,7 @@ esp_err_t axs15231b_disp_off(esp_lcd_panel_t *panel, bool off)
     return ESP_OK;
 }
 
-esp_err_t axs15231b_del(esp_lcd_panel_t *panel)
+static esp_err_t axs15231b_del(esp_lcd_panel_t *panel)
 {
     log_v("panel:0x%08x", panel);
     if (panel == NULL)

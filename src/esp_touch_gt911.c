@@ -76,7 +76,7 @@ typedef struct __attribute__((packed))
 
 gt911_point gt911_resolution;
 
-esp_err_t gt911_reset(esp_lcd_touch_handle_t th)
+static esp_err_t gt911_reset(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -113,7 +113,7 @@ esp_err_t gt911_reset(esp_lcd_touch_handle_t th)
 }
 
 // This function is called if the coordinates do not match the returned coordinates. This is the case for display having another form factor, e.g. 472x320
-void gt911_process_coordinates(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
+static void gt911_process_coordinates(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
 {
     log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
 
@@ -130,7 +130,7 @@ void gt911_process_coordinates(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t 
     portEXIT_CRITICAL(&th->data.lock);
 }
 
-esp_err_t gt911_read_info(esp_lcd_touch_handle_t th)
+static esp_err_t gt911_read_info(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -166,7 +166,7 @@ esp_err_t gt911_read_info(esp_lcd_touch_handle_t th)
     return ESP_OK;
 }
 
-esp_err_t gt911_enter_sleep(esp_lcd_touch_handle_t th)
+static esp_err_t gt911_enter_sleep(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -180,7 +180,7 @@ esp_err_t gt911_enter_sleep(esp_lcd_touch_handle_t th)
     return res;
 }
 
-esp_err_t gt911_exit_sleep(esp_lcd_touch_handle_t th)
+static esp_err_t gt911_exit_sleep(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -214,7 +214,7 @@ esp_err_t gt911_exit_sleep(esp_lcd_touch_handle_t th)
     return ESP_OK;
 }
 
-esp_err_t gt911_read_data(esp_lcd_touch_handle_t th)
+static esp_err_t gt911_read_data(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)
@@ -291,7 +291,7 @@ esp_err_t gt911_read_data(esp_lcd_touch_handle_t th)
     return ESP_OK;
 }
 
-bool gt911_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
+static bool gt911_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t *strength, uint8_t *point_num, uint8_t max_point_num)
 {
     log_v("th:0x%08x, x:0x%08x, y:0x%08x, strength:0x%08x, point_num:0x%08x, max_point_num:%d", th, x, y, strength, point_num, max_point_num);
     if (th == NULL || x == NULL || y == NULL || point_num == NULL)
@@ -316,7 +316,7 @@ bool gt911_get_xy(esp_lcd_touch_handle_t th, uint16_t *x, uint16_t *y, uint16_t 
 }
 
 #if (CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS > 0)
-esp_err_t gt911_get_button_state(esp_lcd_touch_handle_t th, uint8_t n, uint8_t *state)
+static esp_err_t gt911_get_button_state(esp_lcd_touch_handle_t th, uint8_t n, uint8_t *state)
 {
     log_v("th:0x%08x, n:%d, state:0x%08x", th, n, state);
     if (th == NULL)
@@ -336,7 +336,7 @@ esp_err_t gt911_get_button_state(esp_lcd_touch_handle_t th, uint8_t n, uint8_t *
 }
 #endif
 
-esp_err_t gt911_del(esp_lcd_touch_handle_t th)
+static esp_err_t gt911_del(esp_lcd_touch_handle_t th)
 {
     log_v("th:0x%08x", th);
     if (th == NULL)

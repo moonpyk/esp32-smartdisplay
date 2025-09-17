@@ -21,7 +21,9 @@ touch_calibration_data_t touch_calibration_data;
 void (*driver_touch_read_cb)(lv_indev_t *indev, lv_indev_data_t *data);
 #endif
 
-void lvgl_display_resolution_changed_callback(lv_event_t *drv);
+#ifndef DISPLAY_SOFTWARE_ROTATION
+static void lvgl_display_resolution_changed_callback(lv_event_t *drv);
+#endif
 
 lv_timer_t *update_brightness_timer;
 
@@ -232,7 +234,7 @@ void smartdisplay_init()
 // Top of the display is top left when connector is at the bottom
 // The rotation values are relative to how you would rotate the physical display in the clockwise direction.
 // So, LV_DISPLAY_ROTATION_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
-void lvgl_display_resolution_changed_callback(lv_event_t *event)
+static void lvgl_display_resolution_changed_callback(lv_event_t *event)
 {
   const esp_lcd_panel_handle_t panel_handle = display->user_data;
   switch (display->rotation)
