@@ -16,6 +16,7 @@ typedef struct
     // Data
     int x_gap;
     int y_gap;
+    bool swap_xy;
 } ssd1306_panel_t;
 
 // SSD1306 commands
@@ -217,6 +218,16 @@ static esp_err_t ssd1306_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_
     y_start += ph->y_gap;
     y_end += ph->y_gap;
 
+    if (ph->swap_xy)
+    {
+        int temp = x_start;
+        x_start = y_start;
+        y_start = temp;
+        temp = x_end;
+        x_end = y_end;
+        y_end = temp;
+    }
+
     esp_lcd_panel_io_handle_t io = ph->panel_io_handle;
     esp_err_t res;
 
@@ -245,7 +256,7 @@ static esp_err_t ssd1306_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_
 
     return ESP_OK;
 }
-    
+
 static esp_err_t ssd1306_invert_color(esp_lcd_panel_t *panel, bool invert)
 {
     log_v("panel:0x%08x, invert:%d", panel, invert);
@@ -295,11 +306,8 @@ static esp_err_t ssd1306_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
-    if (swap_xy)
-    {
-        log_w("Swapping X and Y is not supported by SSD1306");
-        return ESP_ERR_NOT_SUPPORTED;
-    }
+    ssd1306_panel_t *ph = (ssd1306_panel_t *)panel;
+    ph->swap_xy = swap_xy;
 
     return ESP_OK;
 }
