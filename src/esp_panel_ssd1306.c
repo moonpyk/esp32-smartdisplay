@@ -111,7 +111,7 @@ static esp_err_t ssd1306_init(esp_lcd_panel_t *panel)
         return res;
     }
     // Set start line address
-    if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_SET_START_LINE, (uint8_t[]){0x00}, 1)) != ESP_OK)
+    if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_SET_START_LINE, NULL, 0)) != ESP_OK)
     {
         log_e("Sending SSD1306_CMD_SET_START_LINE failed");
         return res;
