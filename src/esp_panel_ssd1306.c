@@ -84,7 +84,7 @@ static esp_err_t ssd1306_init(esp_lcd_panel_t *panel)
         return ESP_ERR_INVALID_ARG;
     }
 
-    esp_lcd_panel_io_handle_t io = ph->panel_io_handle;
+    const esp_lcd_panel_io_handle_t io = ph->panel_io_handle;
     esp_err_t res;
     // Display OFF (sleep mode)
     if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_DISP_OFF, NULL, 0)) != ESP_OK)
