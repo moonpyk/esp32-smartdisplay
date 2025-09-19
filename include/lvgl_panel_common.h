@@ -97,6 +97,49 @@ static inline void lv_flush_software(lv_display_t *display, const lv_area_t *are
     free(rotation_buffer);
 };
 
+#define EXAMPLE_LVGL_PALETTE_SIZE      8
+
+static inline void lv_flush_oled(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
+{
+    // To use LV_COLOR_FORMAT_I1, we need an extra buffer to hold the converted data
+    static uint8_t oled_buffer[DISPLAY_WIDTH * DISPLAY_HEIGHT / 8];
+
+    const esp_lcd_panel_handle_t panel_handle = display->user_data;
+
+    // This is necessary because LVGL reserves 2 x 4 bytes in the buffer, as these are assumed to be used as a palette. Skip the palette here
+    // More information about the monochrome, please refer to https://docs.lvgl.io/9.2/porting/display.html#monochrome-displays
+    px_map += EXAMPLE_LVGL_PALETTE_SIZE;
+
+    uint16_t hor_res = lv_display_get_physical_horizontal_resolution(display);
+    int x1 = area->x1;
+    int x2 = area->x2;
+    int y1 = area->y1;
+    int y2 = area->y2;
+
+    for (int y = y1; y <= y2; y++) {
+        for (int x = x1; x <= x2; x++) {
+            /* The order of bits is MSB first
+                        MSB           LSB
+               bits      7 6 5 4 3 2 1 0
+               pixels    0 1 2 3 4 5 6 7
+                        Left         Right
+            */
+            bool chroma_color = (px_map[(hor_res >> 3) * y  + (x >> 3)] & 1 << (7 - x % 8));
+
+            /* Write to the buffer as required for the display.
+            * It writes only 1-bit for monochrome displays mapped vertically.*/
+            uint8_t *buf = oled_buffer + hor_res * (y >> 3) + (x);
+            if (chroma_color) 
+                (*buf) &= ~(1 << (y % 8));
+             else 
+                (*buf) |= (1 << (y % 8));
+        }
+    }
+    // pass the draw buffer to the driver
+    esp_lcd_panel_draw_bitmap(panel_handle, x1, y1, x2 + 1, y2 + 1, oled_buffer);
+}
+
+
 static inline void lvgl_setup_panel(esp_lcd_panel_handle_t panel_handle)
 {
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));

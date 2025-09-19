@@ -55,7 +55,7 @@ lv_display_t *lvgl_lcd_init()
 
     lvgl_setup_panel(panel_handle);
     display->user_data = panel_handle;
-    display->flush_cb = lv_flush_hardware;
+    display->flush_cb = lv_flush_oled;
     return display;
 }
 
