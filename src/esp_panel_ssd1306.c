@@ -129,18 +129,18 @@ static esp_err_t ssd1306_init(esp_lcd_panel_t *panel)
         return res;
     }
     // Set Segment Re-map. A0=address mapped; A1=address 127 mapped. Use A1 for 128x64
-    if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_MIRROR_X_OFF, NULL, 0)) != ESP_OK)
+    if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_MIRROR_X_ON, NULL, 0)) != ESP_OK)
     {
-        log_e("Sending SSD1306_CMD_MIRROR_X_OFF failed");
+        log_e("Sending SSD1306_CMD_MIRROR_X_ON failed");
         return res;
     }
     // Set COM Output Scan Direction to increase
-    if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_MIRROR_Y_OFF, NULL, 0)) != ESP_OK)
+    if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_MIRROR_Y_ON, NULL, 0)) != ESP_OK)
     {
-        log_e("Sending SSD1306_CMD_MIRROR_Y_OFF failed");
+        log_e("Sending SSD1306_CMD_MIRROR_Y_ON failed");
         return res;
     }
-    // Set com pins hardware configuration
+    // Set com pins hardware configuration: sequential com pin config (bit 4), disable left/right remap (bit 5)
     if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_SET_COMPINS, (uint8_t[]){0x12}, 1)) != ESP_OK)
     {
         log_e("Sending SSD1306_CMD_SET_COMPINS failed");
@@ -164,6 +164,12 @@ static esp_err_t ssd1306_init(esp_lcd_panel_t *panel)
         log_e("Sending SSD1306_CMD_SET_VCOM_DESELECT_LEVEL failed");
         return res;
     }
+        // Disable scrolling
+    if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_DEACTIVATE_SCROLL, NULL, 0)) != ESP_OK)
+    {
+        log_e("Sending SSD1306_CMD_DEACTIVATE_SCROLL failed");
+        return res;
+    }
     // Output RAM to Display: 0xA4=Output follows RAM content, 0xA5=Output ignores RAM content
     if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_ALL_ON_RESUME, NULL, 0)) != ESP_OK)
     {
@@ -176,18 +182,12 @@ static esp_err_t ssd1306_init(esp_lcd_panel_t *panel)
         log_e("Sending SSD1306_CMD_INVERT_OFF failed");
         return res;
     }
-    // Disable scrolling
-    if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_DEACTIVATE_SCROLL, NULL, 0)) != ESP_OK)
-    {
-        log_e("Sending SSD1306_CMD_DEACTIVATE_SCROLL failed");
-        return res;
-    }
-    // Display ON in normal mode
-    if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_DISP_ON, NULL, 0)) != ESP_OK)
-    {
-        log_e("Sending SSD1306_CMD_DISP_ON failed.");
-        return res;
-    }
+    // // Display ON in normal mode
+    // if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_DISP_ON, NULL, 0)) != ESP_OK)
+    // {
+    //     log_e("Sending SSD1306_CMD_DISP_ON failed.");
+    //     return res;
+    // }
 
     return ESP_OK;
 }
