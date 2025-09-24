@@ -52,7 +52,7 @@ void lvgl_log(lv_log_level_t level, const char *buf)
 // Set backlight intensity
 void smartdisplay_lcd_set_backlight(float duty)
 {
-  log_v("duty:%2f", duty);
+  log_v("duty:%.2f", duty);
 
   if (duty < 0.0f || duty > 1.0f || isnan(duty))
   {
@@ -88,7 +88,7 @@ float smartdisplay_lcd_adaptive_brightness_cds()
 
 void adaptive_brightness(lv_timer_t *timer)
 {
-  log_v("timer:0x%08x", timer);
+  log_v("timer:%p", timer);
 
   const smartdisplay_lcd_adaptive_brightness_cb_t callback = timer->user_data;
   smartdisplay_lcd_set_backlight(callback());
@@ -96,7 +96,7 @@ void adaptive_brightness(lv_timer_t *timer)
 
 void smartdisplay_lcd_set_brightness_cb(smartdisplay_lcd_adaptive_brightness_cb_t cb, uint32_t interval)
 {
-  log_v("adaptive_brightness_cb:0x%08x, interval:%u", cb, interval);
+  log_v("adaptive_brightness_cb:%p, interval:%u", cb, interval);
 
   // Delete current timer if any
   if (update_brightness_timer != NULL)
@@ -125,7 +125,7 @@ void smartdisplay_led_set_rgb(bool r, bool g, bool b)
 // See: https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html
 void lvgl_touch_calibration_transform(lv_indev_t *indev, lv_indev_data_t *data)
 {
-  log_v("indev:0x%08x, data:0x%08x", indev, data);
+  log_v("indev:%p, data:%p", indev, data);
 
   // Call low level read from the driver
   driver_touch_read_cb(indev, data);
@@ -143,7 +143,7 @@ void lvgl_touch_calibration_transform(lv_indev_t *indev, lv_indev_data_t *data)
 
 touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t screen[3], const lv_point_t touch[3])
 {
-  log_v("screen:0x%08x, touch:0x%08x", screen, touch);
+  log_v("screen:%p, touch:%p", screen, touch);
   const float delta = ((touch[0].x - touch[2].x) * (touch[1].y - touch[2].y)) - ((touch[1].x - touch[2].x) * (touch[0].y - touch[2].y));
   touch_calibration_data_t touch_calibration_data = {
       .valid = true,

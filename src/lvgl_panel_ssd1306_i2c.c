@@ -11,7 +11,7 @@
 lv_display_t *lvgl_lcd_init()
 {
     lv_display_t *display = lvgl_create_display();
-    log_v("display:0x%08x", display);
+    log_v("display:%p", display);
 
     // Create I2C bus
     const i2c_config_t i2c_config = {
@@ -39,7 +39,7 @@ lv_display_t *lvgl_lcd_init()
         .flags = {
             .dc_low_on_data = SSD1306_IO_I2C_CONFIG_FLAGS_DC_LOW_ON_DATA,
             .disable_control_phase = SSD1306_IO_I2C_CONFIG_FLAGS_DISABLE_CONTROL_PHASE}};
-    log_d("io_i2c_config: dev_addr:0x%02x, control_phase_bytes:%d, user_ctx:0x%08x, dc_bit_offset:%d, lcd_cmd_bits:%d, lcd_param_bits:%d, flags:{dc_low_on_data:%d, disable_control_phase:%d}", io_i2c_config.dev_addr, io_i2c_config.control_phase_bytes, io_i2c_config.user_ctx, io_i2c_config.dc_bit_offset, io_i2c_config.lcd_cmd_bits, io_i2c_config.lcd_param_bits, io_i2c_config.flags.dc_low_on_data, io_i2c_config.flags.disable_control_phase);
+    log_d("io_i2c_config: dev_addr:0x%02x, on_color_trans_done:%p, control_phase_bytes:%d, user_ctx:%p, dc_bit_offset:%d, lcd_cmd_bits:%d, lcd_param_bits:%d, flags:{dc_low_on_data:%d, disable_control_phase:%d}", io_i2c_config.dev_addr, io_i2c_config.on_color_trans_done, io_i2c_config.control_phase_bytes, io_i2c_config.user_ctx, io_i2c_config.dc_bit_offset, io_i2c_config.lcd_cmd_bits, io_i2c_config.lcd_param_bits, io_i2c_config.flags.dc_low_on_data, io_i2c_config.flags.disable_control_phase);
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)SSD1306_I2C_HOST, &io_i2c_config, &io_handle));
 

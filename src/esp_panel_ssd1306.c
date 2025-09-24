@@ -52,7 +52,7 @@ typedef struct
 
 static esp_err_t ssd1306_reset(esp_lcd_panel_t *panel)
 {
-    log_v("panel:0x%08x", panel);
+    log_v("panel:%p", panel);
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -72,7 +72,7 @@ static esp_err_t ssd1306_reset(esp_lcd_panel_t *panel)
 
 static esp_err_t ssd1306_init(esp_lcd_panel_t *panel)
 {
-    log_v("panel:0x%08x", panel);
+    log_v("panel:%p", panel);
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -194,7 +194,7 @@ static esp_err_t ssd1306_init(esp_lcd_panel_t *panel)
 
 static esp_err_t ssd1306_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_start, int x_end, int y_end, const void *color_data)
 {
-    log_v("panel:0x%08x, x_start:%d, y_start:%d, x_end:%d, y_end:%d", panel, x_start, y_start, x_end, y_end);
+    log_v("panel:%p, x_start:%d, y_start:%d, x_end:%d, y_end:%d", panel, x_start, y_start, x_end, y_end);
     if (panel == NULL || color_data == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -261,7 +261,7 @@ static esp_err_t ssd1306_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_
 
 static esp_err_t ssd1306_invert_color(esp_lcd_panel_t *panel, bool invert)
 {
-    log_v("panel:0x%08x, invert:%d", panel, invert);
+    log_v("panel:%p, invert:%d", panel, invert);
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -279,7 +279,7 @@ static esp_err_t ssd1306_invert_color(esp_lcd_panel_t *panel, bool invert)
 
 static esp_err_t ssd1306_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirror_y)
 {
-    log_v("panel:0x%08x, mirror_x:%d, mirror_y:%d", panel, mirror_x, mirror_y);
+    log_v("panel:%p, mirror_x:%d, mirror_y:%d", panel, mirror_x, mirror_y);
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -304,7 +304,7 @@ static esp_err_t ssd1306_mirror(esp_lcd_panel_t *panel, bool mirror_x, bool mirr
 
 static esp_err_t ssd1306_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
 {
-    log_v("panel:0x%08x, swap_xy:%d", panel, swap_xy);
+    log_v("panel:%p, swap_xy:%d", panel, swap_xy);
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -316,7 +316,7 @@ static esp_err_t ssd1306_swap_xy(esp_lcd_panel_t *panel, bool swap_xy)
 
 static esp_err_t ssd1306_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
 {
-    log_v("panel:0x%08x, x_gap:%d, y_gap:%d", panel, x_gap, y_gap);
+    log_v("panel:%p, x_gap:%d, y_gap:%d", panel, x_gap, y_gap);
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -330,7 +330,7 @@ static esp_err_t ssd1306_set_gap(esp_lcd_panel_t *panel, int x_gap, int y_gap)
 
 static esp_err_t ssd1306_disp_off(esp_lcd_panel_t *panel, bool off)
 {
-    log_v("panel:0x%08x, off:%d", panel, off);
+    log_v("panel:%p, off:%d", panel, off);
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -348,7 +348,7 @@ static esp_err_t ssd1306_disp_off(esp_lcd_panel_t *panel, bool off)
 
 static esp_err_t ssd1306_del(esp_lcd_panel_t *panel)
 {
-    log_v("panel:0x%08x", panel);
+    log_v("panel:%p", panel);
     if (panel == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -365,7 +365,7 @@ static esp_err_t ssd1306_del(esp_lcd_panel_t *panel)
 
 esp_err_t esp_lcd_new_panel_ssd1306(const esp_lcd_panel_io_handle_t panel_io_handle, const esp_lcd_panel_dev_config_t *panel_dev_config, esp_lcd_panel_handle_t *panel_handle)
 {
-    log_v("panel_io_handle:0x%08x, panel_dev_config:0x%08x, panel_handle:0x%08x", panel_io_handle, panel_dev_config, panel_handle);
+    log_v("panel_io_handle:%p, panel_dev_config:%p, panel_handle:%p", panel_io_handle, panel_dev_config, panel_handle);
     if (panel_io_handle == NULL || panel_dev_config == NULL || panel_handle == NULL)
         return ESP_ERR_INVALID_ARG;
 
@@ -414,7 +414,7 @@ esp_err_t esp_lcd_new_panel_ssd1306(const esp_lcd_panel_io_handle_t panel_io_han
     ph->base.set_gap = ssd1306_set_gap;
     ph->base.disp_off = ssd1306_disp_off;
 
-    log_d("panel_handle: 0x%08x", ph);
+    log_d("panel_handle: %p", ph);
     *panel_handle = (esp_lcd_panel_handle_t)ph;
 
     return ESP_OK;
