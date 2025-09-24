@@ -43,15 +43,15 @@ lv_display_t *lvgl_lcd_init()
     esp_lcd_panel_io_handle_t io_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)SSD1306_I2C_HOST, &io_i2c_config, &io_handle));
 
-    const esp_lcd_panel_dev_config_t panel_config = {
+    const esp_lcd_panel_dev_config_t panel_dev_config = {
         .reset_gpio_num = SSD1306_DEV_CONFIG_RESET,
         .color_space = SSD1306_DEV_CONFIG_COLOR_SPACE,
         .bits_per_pixel = SSD1306_DEV_CONFIG_BITS_PER_PIXEL,
         .flags = {
             .reset_active_high = SSD1306_DEV_CONFIG_FLAGS_RESET_ACTIVE_HIGH}};
-    log_d("panel_config: reset_gpio_num:%d, color_space:%d, bits_per_pixel:%d, flags:{reset_active_high:%d}", panel_config.reset_gpio_num, panel_config.color_space, panel_config.bits_per_pixel, panel_config.flags.reset_active_high);
+    log_d("panel_dev_config: reset_gpio_num:%d, color_space:%d, bits_per_pixel:%d, flags:{reset_active_high:%d}", panel_dev_config.reset_gpio_num, panel_dev_config.color_space, panel_dev_config.bits_per_pixel, panel_dev_config.flags.reset_active_high);
     esp_lcd_panel_handle_t panel_handle;
-    ESP_ERROR_CHECK(esp_lcd_new_panel_ssd1306(io_handle, &panel_config, &panel_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_ssd1306(io_handle, &panel_dev_config, &panel_handle));
 
     lvgl_setup_panel(panel_handle);
     display->user_data = panel_handle;
