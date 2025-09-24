@@ -198,8 +198,6 @@ static esp_err_t ssd1306_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_
     if (panel == NULL || color_data == NULL)
         return ESP_ERR_INVALID_ARG;
 
-    const ssd1306_panel_t *ph = (ssd1306_panel_t *)panel;
-
     if (x_start >= x_end)
     {
         log_w("X-start greater than the x-end");
@@ -211,6 +209,8 @@ static esp_err_t ssd1306_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_
         log_w("Y-start greater than the y-end");
         return ESP_ERR_INVALID_ARG;
     }
+
+    const ssd1306_panel_t *ph = (ssd1306_panel_t *)panel;
 
     // Correct for gap
     x_start += ph->x_gap;
@@ -229,53 +229,33 @@ static esp_err_t ssd1306_draw_bitmap(esp_lcd_panel_t *panel, int x_start, int y_
     }
 
     esp_lcd_panel_io_handle_t io = ph->panel_io_handle;
-    esp_err_t res;
-
-   // To use LV_COLOR_FORMAT_I1, we need an extra buffer to hold the converted data
-    int32_t w = x_end - x_start + 1;
-    int32_t h = y_end - y_start + 1;
-    size_t area_buf_size = (w * h) / 8;
-    uint8_t *oled_buffer = (uint8_t *)heap_caps_malloc(area_buf_size, LVGL_BUFFER_MALLOC_FLAGS);
-    assert(oled_buffer != NULL);
-
-    // This is necessary because LVGL reserves 2 x 4 bytes in the buffer, as these are assumed to be used as a palette. Skip the palette here
-    // More information about the monochrome, please refer to https://docs.lvgl.io/9.2/porting/display.html#monochrome-displays
-    color_data += 8;
-
-#define LVGL_OLED_BIT_ORDER_LSB true
-    // lv_draw_sw_i1_convert_to_vtiled(px_map, area_buf_size, w, h, oled_buffer, area_buf_size, LVGL_OLED_BIT_ORDER_LSB);
-    //  - The output buffer (oled_buffer) must be at least as large as the input buffer, and is statically allocated for the full display size.
-    //  - The function assumes that both width and height are multiples of 8, as required by LVGL for monochrome tiled rendering.
-    //  - If the area is not aligned to 8x8, or the buffer sizes are insufficient, the function may assert or produce incorrect output.
-    lv_draw_sw_i1_convert_to_vtiled(color_data, area_buf_size, w, h, oled_buffer, area_buf_size, true);
-
+ 
     // one page contains 8 rows (COMs)
     uint8_t page_start = y_start / 8;
     uint8_t page_end = (y_end - 1) / 8;
+
+    esp_err_t res;
     if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_SET_COLUMN_RANGE, (uint8_t[]){(x_start & 0x7F), ((x_end - 1) & 0x7F)}, 2)) != ESP_OK)
     {
-        free(oled_buffer);
         log_e("SSD1306_CMD_SET_COLUMN_RANGE failed");
         return res;
     }
 
     if ((res = esp_lcd_panel_io_tx_param(io, SSD1306_CMD_SET_PAGE_RANGE, (uint8_t[]){(page_start & 0x07), (page_end & 0x07)}, 2)) != ESP_OK)
     {
-        free(oled_buffer);
         log_e("io tx param SSD1306_CMD_SET_PAGE_RANGE failed");
         return res;
     }
 
     // transfer frame buffer
     size_t len = (y_end - y_start) * (x_end - x_start) * ph->panel_dev_config.bits_per_pixel / 8;
+    log_d("Transfering %u bytes of color data", len);
     if ((res = esp_lcd_panel_io_tx_color(io, -1, color_data, len)) != ESP_OK)
     {
-        free(oled_buffer);
         log_e("Sending color data failed");
         return res;
     }
 
-    free(oled_buffer);
     return ESP_OK;
 }
 

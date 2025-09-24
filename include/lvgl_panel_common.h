@@ -97,15 +97,32 @@ static inline void lv_flush_software(lv_display_t *display, const lv_area_t *are
     free(rotation_buffer);
 };
 
-#define EXAMPLE_LVGL_PALETTE_SIZE      8
-
 static inline void lv_flush_oled(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
     const esp_lcd_panel_handle_t panel_handle = display->user_data;
-    // pass the draw buffer to the driver
-    esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2, area->y2 , px_map);
-}
+      // To use LV_COLOR_FORMAT_I1, we need an extra buffer to hold the converted data
+    int32_t w = area->x2 - area->x1 + 1;
+    int32_t h = area->y2 - area->y1 + 1;
+    size_t area_buf_size = (w * h) / 8;
+    uint8_t *oled_buffer = (uint8_t *)heap_caps_malloc(area_buf_size, LVGL_BUFFER_MALLOC_FLAGS);
+    assert(oled_buffer != NULL);
 
+    // This is necessary because LVGL reserves 2 x 4 bytes in the buffer, as these are assumed to be used as a palette. Skip the palette here
+    // More information about the monochrome, please refer to https://docs.lvgl.io/9.2/porting/display.html#monochrome-displays
+    px_map += 8;
+
+#define LVGL_OLED_BIT_ORDER_LSB true
+    // lv_draw_sw_i1_convert_to_vtiled(px_map, area_buf_size, w, h, oled_buffer, area_buf_size, LVGL_OLED_BIT_ORDER_LSB);
+    //  - The output buffer (oled_buffer) must be at least as large as the input buffer, and is statically allocated for the full display size.
+    //  - The function assumes that both width and height are multiples of 8, as required by LVGL for monochrome tiled rendering.
+    //  - If the area is not aligned to 8x8, or the buffer sizes are insufficient, the function may assert or produce incorrect output.
+    lv_draw_sw_i1_convert_to_vtiled(px_map, area_buf_size, w, h, oled_buffer, area_buf_size, true);
+
+    // pass the draw buffer to the driver
+    esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2, area->y2 , oled_buffer);
+
+    free(oled_buffer);
+}
 
 static inline void lvgl_setup_panel(esp_lcd_panel_handle_t panel_handle)
 {
