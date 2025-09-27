@@ -1,4 +1,4 @@
-#ifdef DISPLAY_ST7262_PAR
+#ifdef PANEL_ST7262_PAR
 
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_panel_rgb.h>
@@ -48,8 +48,8 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&rgb_panel_config, &panel_handle));
 
     lvgl_setup_panel(panel_handle);
-    display->user_data = panel_handle;
-    display->flush_cb = lv_flush_software;
+    lv_display_set_user_data(display, panel_handle);
+    lv_display_set_flush_cb(display, lv_flush_software);
     return display;
 }
 

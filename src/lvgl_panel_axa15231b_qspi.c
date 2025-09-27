@@ -1,4 +1,4 @@
-#ifdef DISPLAY_AXS15231B_QSPI
+#ifdef PANEL_AXS15231B_QSPI
 
 #include <esp32_smartdisplay.h>
 #include <esp_panel_axs15231b.h>
@@ -77,8 +77,8 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_new_panel_axs15231b(io_handle, &panel_dev_config, &panel_handle));
 
     lvgl_setup_panel(panel_handle);
-    display->user_data = panel_handle;
-    display->flush_cb = lv_flush_hardware;
+    lv_display_set_user_data(display, panel_handle);
+    lv_display_set_flush_cb(display, lv_flush_hardware);
     return display;
 }
 

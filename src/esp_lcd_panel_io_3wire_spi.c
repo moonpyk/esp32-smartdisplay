@@ -1,4 +1,4 @@
-#ifdef DISPLAY_ST7701_PAR
+#ifdef PANEL_ST7701_PAR
 
 /*
  * SPDX-FileCopyrightText: 2023 Espressif Systems (Shanghai) CO LTD

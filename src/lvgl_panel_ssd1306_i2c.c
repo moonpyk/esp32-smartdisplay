@@ -1,4 +1,4 @@
-#ifdef DISPLAY_SSD1306
+#ifdef PANEL_SSD1306
 
 #include <esp32_smartdisplay.h>
 #include <esp_lcd_panel_io.h>
@@ -54,8 +54,8 @@ lv_display_t *lvgl_lcd_init()
     ESP_ERROR_CHECK(esp_lcd_new_panel_ssd1306(io_handle, &panel_dev_config, &panel_handle));
 
     lvgl_setup_panel(panel_handle);
-    display->user_data = panel_handle;
-    display->flush_cb = lv_flush_oled;
+    lv_display_set_user_data(display, panel_handle);
+    lv_display_set_flush_cb(display, lv_flush_oled);
     return display;
 }
 

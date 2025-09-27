@@ -1,4 +1,4 @@
-#ifdef DISPLAY_AXS15231B_QSPI
+#ifdef PANEL_AXS15231B_QSPI
 
 #include <esp_panel_axs15231b.h>
 #include <esp32-hal-log.h>

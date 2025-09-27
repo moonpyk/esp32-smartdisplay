@@ -21,7 +21,7 @@ touch_calibration_data_t touch_calibration_data;
 void (*driver_touch_read_cb)(lv_indev_t *indev, lv_indev_data_t *data);
 #endif
 
-#ifndef DISPLAY_SOFTWARE_ROTATION
+#ifndef LVGL_DISPLAY_SOFTWARE_ROTATION
 static void lvgl_display_resolution_changed_callback(lv_event_t *drv);
 #endif
 
@@ -205,7 +205,7 @@ void smartdisplay_init()
   // Setup TFT display
   display = lvgl_lcd_init();
 
-#ifndef DISPLAY_SOFTWARE_ROTATION
+#ifndef LVGL_DISPLAY_SOFTWARE_ROTATION
   // Register callback for hardware rotation
   lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, NULL);
 #endif
@@ -229,7 +229,7 @@ void smartdisplay_init()
 #endif
 }
 
-#ifndef DISPLAY_SOFTWARE_ROTATION
+#ifndef LVGL_DISPLAY_SOFTWARE_ROTATION
 // Called when driver resolution is updated (including rotation)
 // Top of the display is top left when connector is at the bottom
 // The rotation values are relative to how you would rotate the physical display in the clockwise direction.
