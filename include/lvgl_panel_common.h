@@ -10,9 +10,10 @@ static inline lv_display_t *lvgl_create_display()
 {
     lv_display_t *display = lv_display_create(LVGL_HOR_RES, LVGL_VER_RES);
     lv_color_format_t cf = lv_display_get_color_format(display);
-    uint32_t px_size = lv_color_format_get_size(cf);
-    uint32_t drawBufferSize = px_size * LVGL_BUFFER_PIXELS;
+    uint32_t stride = lv_draw_buf_width_to_stride(LVGL_HOR_RES, cf);
+    uint32_t drawBufferSize = stride * LVGL_BUFFER_ROWS;
     void *drawBuffer = heap_caps_malloc(drawBufferSize, LVGL_BUFFER_MALLOC_FLAGS);
+    assert(drawBuffer != NULL);
     lv_display_set_buffers(display, drawBuffer, NULL, drawBufferSize, LVGL_DISPLAY_RENDER_MODE);
     return display;
 }
@@ -66,54 +67,43 @@ static inline void lv_flush_software(lv_display_t *display, const lv_area_t *are
     int32_t w = lv_area_get_width(area);
     int32_t h = lv_area_get_height(area);
     lv_color_format_t cf = lv_display_get_color_format(display);
-    uint32_t px_size = lv_color_format_get_size(cf);
-    size_t buf_size = w * h * px_size;
+    uint32_t stride = lv_draw_buf_width_to_stride(w, cf);
+    size_t buf_size = stride * h;
+
     log_v("alloc rotation buffer to: %u bytes", buf_size);
     void *rotation_buffer = heap_caps_malloc(buf_size, LVGL_BUFFER_MALLOC_FLAGS);
     assert(rotation_buffer != NULL);
 
-    uint32_t w_stride = lv_draw_buf_width_to_stride(w, cf);
-    uint32_t h_stride = lv_draw_buf_width_to_stride(h, cf);
+    lv_draw_sw_rotate(px_map, rotation_buffer, w, h, stride, stride, rotation, cf);
 
+    int32_t x1, y1, x2, y2;
     switch (rotation)
     {
     case LV_DISPLAY_ROTATION_90:
-        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, area->y1, display->ver_res - area->x1 - w, area->y1 + h, display->ver_res - area->x1, rotation_buffer));
+        x1 = area->y1;
+        y1 = LVGL_VER_RES - area->x1 - w;
+        x2 = x1 + h - 1;
+        y2 = y1 + w - 1;
         break;
     case LV_DISPLAY_ROTATION_180:
-        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, w_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->x1 - w, display->ver_res - area->y1 - h, display->hor_res - area->x1, display->ver_res - area->y1, rotation_buffer));
+        x1 = LVGL_HOR_RES - area->x2 - 1;
+        y1 = LVGL_VER_RES - area->y2 - 1;
+        x2 = x1 + w - 1;
+        y2 = y1 + h - 1;
         break;
     case LV_DISPLAY_ROTATION_270:
-        lv_draw_sw_rotate(px_map, rotation_buffer, w, h, w_stride, h_stride, rotation, cf);
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, display->hor_res - area->y2 - 1, area->x1, display->hor_res - area->y2 - 1 + h, area->x2 + 1, rotation_buffer));
+        x1 = LVGL_HOR_RES - area->y2 - 1;
+        y1 = area->x1;
+        x2 = x1 + h - 1;
+        y2 = y1 + w - 1;
         break;
     default:
         assert(false);
-        break;
     }
 
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, x1, y1, x2, y2, rotation_buffer));
     free(rotation_buffer);
 };
-
-static inline void lv_flush_oled(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
-{
-    const esp_lcd_panel_handle_t panel_handle = lv_display_get_user_data(display);
-
-    // To use LV_COLOR_FORMAT_I1, we need an extra buffer to hold the converted data
-    static uint8_t oled_buffer[LVGL_HOR_RES * LVGL_VER_RES / 8];
-
-    //  This is necessary because LVGL reserves 2 x 4 bytes in the buffer, as these are assumed to be used as a palette. Skip the palette here
-    //  More information about the monochrome, please refer to https://docs.lvgl.io/9.2/porting/display.html#monochrome-displays
-    px_map += 8;
-
-    const size_t px_buf_size = lv_display_get_draw_buf_size(display);
-    lv_draw_sw_i1_convert_to_vtiled(px_map, px_buf_size, LVGL_HOR_RES, LVGL_VER_RES, oled_buffer, sizeof(oled_buffer), false);
-
-    // pass the draw buffer to the driver
-    esp_lcd_panel_draw_bitmap(panel_handle, 0,0, LVGL_HOR_RES, LVGL_VER_RES, oled_buffer);
-}
 
 static inline void lvgl_setup_panel(esp_lcd_panel_handle_t panel_handle)
 {
