@@ -33,7 +33,7 @@ lv_display_t *lvgl_lcd_init()
         .on_color_trans_done = lvgl_panel_color_trans_done,
         .control_phase_bytes = SSD1306_IO_I2C_CONFIG_CONTROL_PHASE_BYTES,
         .user_ctx = display,
-        .dc_bit_offset = SSD1306_IO_I2C_CONFIG_DC_BIT_OFFSET,   // 6 for SSD1306, 0 for SH1107 
+        .dc_bit_offset = SSD1306_IO_I2C_CONFIG_DC_BIT_OFFSET, // 6 for SSD1306, 0 for SH1107
         .lcd_cmd_bits = SSD1306_IO_I2C_CONFIG_LCD_CMD_BITS,
         .lcd_param_bits = SSD1306_IO_I2C_CONFIG_LCD_PARAM_BITS,
         .flags = {
@@ -53,11 +53,8 @@ lv_display_t *lvgl_lcd_init()
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_ssd1306(io_handle, &panel_dev_config, &panel_handle));
 
-    if ((res = esp_lcd_panel_io_rx_param(th->io, 0x81, (const uint8_t[]){0x8F}, 1)) != ESP_OK)  // SSD1306_SETCONTRAST (0x81), 0x8F is a reasonable default contrast value
-    {
-        log_e("Unable to set brightness");
-        return res;
-    }
+    // SSD1306_SETCONTRAST (0x81), 0x8F is a reasonable default contrast value
+    ESP_ERROR_CHECK(esp_lcd_panel_io_rx_param(io_handle, 0x81, (const uint8_t[]){0x8F}, 1));
 
     lvgl_setup_panel(panel_handle);
     lv_display_set_user_data(display, panel_handle);
