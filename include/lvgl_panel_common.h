@@ -108,68 +108,11 @@ static inline void lv_flush_oled(lv_display_t *display, const lv_area_t *area, u
     //  More information about the monochrome, please refer to https://docs.lvgl.io/9.2/porting/display.html#monochrome-displays
     px_map += 8;
 
-    //     log_v("Converting to tiled format for OLED");
-    // #define LVGL_OLED_BIT_ORDER_LSB true
-    //     // lv_draw_sw_i1_convert_to_vtiled(px_map, area_buf_size, w, h, oled_buffer, area_buf_size, LVGL_OLED_BIT_ORDER_LSB);
-    //     //  - The output buffer (oled_buffer) must be at least as large as the input buffer, and is statically allocated for the full display size.
-    //     //  - The function assumes that both width and height are multiples of 8, as required by LVGL for monochrome tiled rendering.
-    //     //  - If the area is not aligned to 8x8, or the buffer sizes are insufficient, the function may assert or produce incorrect output.
-    //     log_v("Convert to vtiled: w=%d, h=%d, buf_size=%d", w, h, px_buf_size);
-    //     lv_draw_sw_i1_convert_to_vtiled(px_map, px_buf_size, w, h, &oled_buffer, px_buf_size, LVGL_OLED_BIT_ORDER_LSB);
-    uint32_t hor_res = lv_display_get_physical_horizontal_resolution(display);
-    int32_t x1 = area->x1;
-    int32_t x2 = area->x2;
-    int32_t y1 = area->y1;
-    int32_t y2 = area->y2;
-
-    for (int y = y1; y <= y2; y++)
-    {
-        for (int32_t x = x1; x <= x2; x++)
-        {
-            /* The order of bits is MSB first
-                        MSB           LSB
-               bits      7 6 5 4 3 2 1 0
-               pixels    0 1 2 3 4 5 6 7
-                        Left         Right
-            */
-            bool chroma_color = (px_map[(hor_res >> 3) * y + (x >> 3)] & 1 << (7 - x % 8));
-            /* Write to the buffer as required for the display.
-             * It writes only 1-bit for monochrome displays mapped vertically.*/
-            uint8_t *buf = oled_buffer + hor_res * (y >> 3) + (x);
-            if (chroma_color)
-                *buf &= ~(1 << (y % 8));
-            else
-                *buf |= (1 << (y % 8));
-        }
-    }
+    const size_t px_buf_size = lv_display_get_draw_buf_size(display);
+    lv_draw_sw_i1_convert_to_vtiled(px_map, px_buf_size, LVGL_HOR_RES, LVGL_VER_RES, oled_buffer, sizeof(oled_buffer), false);
 
     // pass the draw buffer to the driver
-    esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2 + 1, area->y2 + 1, oled_buffer);
-
-
-
-//       // To use LV_COLOR_FORMAT_I1, we need an extra buffer to hold the converted data
-//     int32_t w = area->x2 - area->x1 + 1;
-//     int32_t h = area->y2 - area->y1 + 1;
-//     size_t area_buf_size = (w * h) / 8;
-//     uint8_t *oled_buffer = (uint8_t *)heap_caps_malloc(area_buf_size, LVGL_BUFFER_MALLOC_FLAGS);
-//     assert(oled_buffer != NULL);
-
-//     // This is necessary because LVGL reserves 2 x 4 bytes in the buffer, as these are assumed to be used as a palette. Skip the palette here
-//     // More information about the monochrome, please refer to https://docs.lvgl.io/9.2/porting/display.html#monochrome-displays
-//     px_map += 8;
-
-// #define LVGL_OLED_BIT_ORDER_LSB true
-//     // lv_draw_sw_i1_convert_to_vtiled(px_map, area_buf_size, w, h, oled_buffer, area_buf_size, LVGL_OLED_BIT_ORDER_LSB);
-//     //  - The output buffer (oled_buffer) must be at least as large as the input buffer, and is statically allocated for the full display size.
-//     //  - The function assumes that both width and height are multiples of 8, as required by LVGL for monochrome tiled rendering.
-//     //  - If the area is not aligned to 8x8, or the buffer sizes are insufficient, the function may assert or produce incorrect output.
-//     lv_draw_sw_i1_convert_to_vtiled(px_map, area_buf_size, w, h, oled_buffer, area_buf_size, true);
-
-//     // pass the draw buffer to the driver
-//     esp_lcd_panel_draw_bitmap(panel_handle, area->x1, area->y1, area->x2, area->y2 , oled_buffer);
-
-//     free(oled_buffer);
+    esp_lcd_panel_draw_bitmap(panel_handle, 0,0, LVGL_HOR_RES, LVGL_VER_RES, oled_buffer);
 }
 
 static inline void lvgl_setup_panel(esp_lcd_panel_handle_t panel_handle)

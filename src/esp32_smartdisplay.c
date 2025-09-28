@@ -13,10 +13,7 @@
 extern lv_display_t *lvgl_lcd_init();
 extern lv_indev_t *lvgl_touch_init();
 
-lv_display_t *display;
-
 #ifdef BOARD_HAS_TOUCH
-lv_indev_t *indev;
 touch_calibration_data_t touch_calibration_data;
 void (*driver_touch_read_cb)(lv_indev_t *indev, lv_indev_data_t *data);
 #endif
@@ -160,7 +157,7 @@ touch_calibration_data_t smartdisplay_compute_touch_calibration(const lv_point_t
 };
 #endif
 
-void smartdisplay_init()
+lv_display_t *smartdisplay_init()
 {
   log_d("smartdisplay_init");
 #ifdef BOARD_HAS_RGB_LED
@@ -203,16 +200,16 @@ void smartdisplay_init()
 #endif
 #endif
   // Setup TFT display
-  display = lvgl_lcd_init();
+  lv_display_t *display = lvgl_lcd_init();
 
 #ifndef LVGL_DISPLAY_SOFTWARE_ROTATION
   // Register callback for hardware rotation
-  lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, NULL);
+  lv_display_add_event_cb(display, lvgl_display_resolution_changed_callback, LV_EVENT_RESOLUTION_CHANGED, display);
 #endif
 
   //  Clear screen
   lv_obj_clean(lv_scr_act());
-#if DISPLAY_BCKL  
+#if DISPLAY_BCKL
   // Turn backlight on (50%)
   smartdisplay_lcd_set_backlight(0.5f);
 #endif
@@ -220,13 +217,15 @@ void smartdisplay_init()
 // If there is a touch controller defined
 #ifdef BOARD_HAS_TOUCH
   // Setup touch
-  indev = lvgl_touch_init();
-  indev->disp = display;
+  lv_indev_t* indev = lvgl_touch_init();
+  lv_indev_set_display(indev, display);
   // Intercept callback
-  driver_touch_read_cb = indev->read_cb;
-  indev->read_cb = lvgl_touch_calibration_transform;
+  driver_touch_read_cb = lv_indev_get_read_cb(indev);
+  lv_indev_set_read_cb(indev, lvgl_touch_calibration_transform);
   lv_indev_enable(indev, true);
 #endif
+
+  return display;
 }
 
 #ifndef LVGL_DISPLAY_SOFTWARE_ROTATION
@@ -236,7 +235,8 @@ void smartdisplay_init()
 // So, LV_DISPLAY_ROTATION_90 means you rotate the hardware 90 degrees clockwise, and the display rotates 90 degrees counterclockwise to compensate.
 static void lvgl_display_resolution_changed_callback(lv_event_t *event)
 {
-  const esp_lcd_panel_handle_t panel_handle = display->user_data;
+  lv_display_t *display = lv_event_get_target(event);
+  const esp_lcd_panel_handle_t panel_handle = lv_display_get_user_data(display);
   switch (display->rotation)
   {
   case LV_DISPLAY_ROTATION_0:

@@ -31,7 +31,7 @@ extern "C"
     } touch_calibration_data_t;
 
     // Initialize the display and touch
-    void smartdisplay_init();
+    lv_display_t* smartdisplay_init();
 #ifdef BOARD_HAS_TOUCH
     // Touch calibration
     extern touch_calibration_data_t touch_calibration_data;

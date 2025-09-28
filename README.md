@@ -375,10 +375,11 @@ To include it globally, the define must be (for the include directory):
 
 The library exposes the following functions.
 
-### void smartdisplay_init()
+### lv_display_t * smartdisplay_init()
 
 This is the first function that needs to be called.
 It initializes the display controller and touch controller and will turn on the display at 50% brightness.
+The return value is the display handle.
 
 ### void smartdisplay_lcd_set_backlight(float duty)
 

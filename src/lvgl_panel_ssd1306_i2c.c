@@ -53,6 +53,12 @@ lv_display_t *lvgl_lcd_init()
     esp_lcd_panel_handle_t panel_handle;
     ESP_ERROR_CHECK(esp_lcd_new_panel_ssd1306(io_handle, &panel_dev_config, &panel_handle));
 
+    if ((res = esp_lcd_panel_io_rx_param(th->io, 0x81, (const uint8_t[]){0x8F}, 1)) != ESP_OK)  // SSD1306_SETCONTRAST (0x81), 0x8F is a reasonable default contrast value
+    {
+        log_e("Unable to set brightness");
+        return res;
+    }
+
     lvgl_setup_panel(panel_handle);
     lv_display_set_user_data(display, panel_handle);
     lv_display_set_flush_cb(display, lv_flush_oled);
