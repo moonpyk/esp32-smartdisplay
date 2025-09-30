@@ -7,7 +7,7 @@
 #include <esp_lcd_panel_ops.h>
 #include <lvgl_panel_common.h>
 
-lv_display_t *lvgl_lcd_init(uint32_t hor_res, uint32_t ver_res)
+lv_display_t *lvgl_lcd_init()
 {
     lv_display_t *display = lvgl_create_display();
     log_v("display:%p", display);
